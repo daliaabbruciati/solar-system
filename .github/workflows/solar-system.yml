@@ -32,6 +32,13 @@ jobs:
               with:
                   node-version: ${{ matrix.nodejs_version }}
 
+            # caching npm dependecies
+            - name: Cahce NPM Dependecies
+              uses: actions/cache@v3
+              with: 
+                path: node_modules # where to pick up the dependencies
+                key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+
             - name: Install dependencies
               run: npm install
 
@@ -40,7 +47,7 @@ jobs:
               run: npm run test
 
             - name: Archive Test result
-              # to retrive output from the previous step
+              # to retrive output from the previous step (in our case Run tests)
               if: steps.nodejs-unit-testing-step.outcome == 'failure'
               uses: actions/upload-artifact@v3
               with:
@@ -58,6 +65,13 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18
+
+            # caching npm dependecies
+            - name: Cahce NPM Dependecies
+              uses: actions/cache@v3
+              with: 
+                path: node_modules # where to pick up the dependencies
+                key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           
             - name: Install dependencies
               run: npm install
