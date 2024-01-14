@@ -6,6 +6,8 @@ on:
         branches:
             - main
             - 'feature/*'
+
+# production db            
 env:
     MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
     MONGO_USERNAME: ${{vars.MONGO_USERNAME}}
@@ -14,6 +16,16 @@ env:
 jobs:
     unit-testing:
         name: Unit Testing
+        services:
+          # label of the service container
+            mongo-db:
+              image: daliaabbruciati/solar-system:6a9d0c8b6ecb4ef948f8f79f175bb1b9a2115096
+              ports:
+                - 27017:27017
+        env:
+          MONGO_URI: 'mongodb+srv://localhost:27017/superData'
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password
         strategy:
           matrix:
             nodejs_version: [18, 19, 20]
@@ -90,6 +102,7 @@ jobs:
     docker: 
       name: Containerization
       needs: [unit-testing, code-coverage]
+      # permission to also write on the ghcr
       permissions: 
         packages: write
       runs-on: ubuntu-latest
