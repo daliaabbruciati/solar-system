@@ -69,15 +69,27 @@ jobs:
     
     code-coverage:
         name: Code Coverage
+        # Job Container
+        container:
+          image: node:18
+        services:
+          mongo-db:
+            image: daliaabbruciati/solar-system:6a9d0c8b6ecb4ef948f8f79f175bb1b9a2115096
+            options:
+                --name mongo
+        env:
+          MONGO_URI: 'mongodb://mongo:27017/superData'
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup NodeJS Version - 18
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 18
+            # - name: Setup NodeJS Version - 18
+            #   uses: actions/setup-node@v3
+            #   with:
+            #       node-version: 18
 
             # caching npm dependecies
             - name: Cahce NPM Dependecies
