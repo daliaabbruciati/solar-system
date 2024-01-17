@@ -131,13 +131,6 @@ jobs:
             push: false
             tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
 
-        - name: Build a NON-PROD image for testing
-          uses: docker/build-push-action@v4
-          with:
-            context: .
-            push: false
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:non-prod
-
         - name: Docker Image Test
           run: |
             docker images
@@ -153,22 +146,6 @@ jobs:
 
             echo Testing Image URL using wget
             wget -q -O - 127.0.0.1:3000/live | grep live
-        
-        - name: Docker Image NON-PROD Test
-          run: |
-            docker images
-            docker run --name solar-system-app -d \
-              -p 3000:3000 \
-              -e MONGO_URI=$MONGO_URI \
-              -e MONGO_USERNAME=$MONGO_USERNAME \
-              -e MONGO_PASSWORD=$MONGO_PASSWORD \
-              ${{ vars.DOCKERHUB_USERNAME }}/solar-system:non-prod
-
-            export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
-            echo $IP
-
-            echo Testing Image URL using wget
-            wget -q -O - 127.0.0.1:3000/live | grep live
 
         - name: Container Registry Push
           uses: docker/build-push-action@v4
@@ -177,5 +154,4 @@ jobs:
             push: true
             tags: |
              ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
-             ${{ vars.DOCKERHUB_USERNAME }}/solar-system:non-prod
              ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}
